@@ -1,56 +1,33 @@
-# Matrix Solver in Gaussian Elimination and LU Decomposition.
-
-MATRIX_COUNT = 0
-
-
-def multiplyMatrix(matrixA, matrixB, isTrue):
+def findInverse(matrix, vector):
     """
-    Multiplying two matrices and return the outcome matrix
-
-    :param matrixA: NxM Matrix
-    :param matrixB: NxM Matrix
-    :param isTrue: boolean which decide if save matrices in a list
-    :return: NxM matrix
+    Solve the matrix into an Identity matrix, updating the vector of the matrix, and return the inverse matrix of matrix
+    :param matrix: NxN matrix
+    :param vector: Nx1 vector solution of the matrix
+    :return: Inverse NxN matrix, the inverse matrix of matrix
     """
-    # Initialize NxM matrix filled with zeros
-    matrixC = [[0.0] * len(matrixB[0]) for _ in range(len(matrixA))]
+    # Initialize inverseMatrix into an Identity matrix
+    inverseMatrix = [[1.0 if row == col else 0.0 for col in range(len(matrix))] for row in range(len(matrix))]
 
-    # Multiply the two matrices and store the outcome in matrixC
-    for i in range(len(matrixA)):
-        for j in range(len(matrixB[0])):
-            for k in range(len(matrixB)):
-                matrixC[i][j] = matrixC[i][j] + matrixA[i][k] * matrixB[k][j]
+    # Solving matrix into an Upper matrix
+    for i in range(len(matrix)):
+        # Calling function to reArrange the matrix, and the vector
+        matrix, vector = checkPivotColumn(matrix, vector, i)
 
-    # Saving the matrices in the right lists
-    if isTrue:
-        global MATRIX_COUNT
-        with open("GaussianElimination.txt", 'a+') as f:
-            f.write('=================================================================================================')
+        for j in range(i + 1, len(matrix)):
+            if matrix[j][i] != 0:
+                # Multiply into an Upper matrix, updating matrix vector as well, and keep the inverseMatrix updated
+                vector = multiplyMatrix(initElementaryMatrix(len(matrix), j, i, - matrix[j][i]), vector, False)
+                inverseMatrix = multiplyMatrix(initElementaryMatrix(len(matrix), j, i, - matrix[j][i]), inverseMatrix, False)
+                matrix = multiplyMatrix(initElementaryMatrix(len(matrix), j, i, - matrix[j][i]), matrix, True)
 
-            f.write('\nElementary Matrix [' + str(MATRIX_COUNT) + ']\n')
-            for i in range(len(matrixA)):
-                for j in range(len(matrixA)):
-                    temp = '{: ^22}'.format(matrixA[i][j])
-                    f.write(temp)
-                f.write('\n')
+    # Solving matrix into a Lower matrix
+    for i in reversed(range(len(matrix))):
+        for j in reversed(range(i)):
+            # Multiply into a Lower matrix, updating matrix vector as well, and keep the inverseMatrix updated
+            if matrix[j][i] != 0:
+                vector = multiplyMatrix(initElementaryMatrix(len(matrix), j, i, - matrix[j][i]), vector, False)
+                inverseMatrix = multiplyMatrix(initElementaryMatrix(len(matrix), j, i, - matrix[j][i]), inverseMatrix, False)
+                matrix = multiplyMatrix(initElementaryMatrix(len(matrix), j, i, - matrix[j][i]), matrix, True)
 
-            f.write('\npreMultiply Matrix [' + str(MATRIX_COUNT) + ']\n')
-            for i in range(len(matrixB)):
-                for j in range(len(matrixB)):
-                    temp = '{: ^22}'.format(matrixB[i][j])
-                    f.write(temp)
-                f.write('\n')
-
-            f.write('\nafterMultiply Matrix [' + str(MATRIX_COUNT) + ']\n')
-            for i in range(len(matrixC)):
-                for j in range(len(matrixC)):
-                    temp = '{: ^22}'.format(matrixC[i][j])
-                    f.write(temp)
-                f.write('\n')
-
-        MATRIX_COUNT = MATRIX_COUNT + 1
-
-    # Return the outcome matrix
-    return matrixC
-
-
+    # Return the inverse matrix, and the updated solution vector of the matrix
+    return inverseMatrix, vector
