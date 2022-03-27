@@ -1,5 +1,7 @@
+# Author : Nitzan Tomer & Zaccharie Attias & Sharon Angdo
 # Global Variable [Only Used To print the iteration number]
 MATRIX_COUNT = 0
+COUNT = 0
 
 
 def printIntoFile(data, message, isTrue):
@@ -11,6 +13,7 @@ def printIntoFile(data, message, isTrue):
     """
     # Our Global Variable To Count The Iteration Number
     global MATRIX_COUNT
+    global COUNT
 
     # In Case We Are Running A New Linear Equation, It will erase the lase one
     if MATRIX_COUNT == 0:
@@ -24,9 +27,10 @@ def printIntoFile(data, message, isTrue):
             # In case we are printing new calculation
             if MATRIX_COUNT % 3 == 0:
                 file.write('==========================================================================================')
+                COUNT += 1
 
             # Saving the matrix in the file
-            file.write('\n' + str(message) + ' [' + str(MATRIX_COUNT) + ']\n')
+            file.write('\n' + str(message) + ' [' + str(COUNT) + ']\n')
             for i in range(len(data)):
                 for j in range(len(data[0])):
                     objectData = '{: ^22}'.format(data[i][j])
@@ -147,7 +151,6 @@ def checkPivotColumn(matrix, vector, index):
     if matrix[index][index] != 1:
         vector = multiplyMatrix(initElementaryMatrix(len(matrix), index, index, 1 / matrix[index][index]), vector, False)
         matrix = multiplyMatrix(initElementaryMatrix(len(matrix), index, index, 1 / matrix[index][index]), matrix, True)
-
     # Return the updated matrix and vector
     return matrix, vector
 
@@ -194,6 +197,11 @@ def multiplyMatrix(matrixA, matrixB, isTrue):
         for j in range(len(matrixB[0])):
             for k in range(len(matrixB)):
                 matrixC[i][j] = matrixC[i][j] + matrixA[i][k] * matrixB[k][j]
+
+    for i in range(len(matrixC)):
+        for j in range(len(matrixC[0])):
+            if abs(matrixC[i][j] - round(matrixC[i][j])) <= max(1e-9 * max(abs(matrixC[i][j]), abs(round(matrixC[i][j]))), 0.0):
+                matrixC[i][j] = round(matrixC[i][j])
 
     # Saving the matrices in the right lists
     if isTrue:
