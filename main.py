@@ -217,3 +217,51 @@ def initMatrix():
 
     # Return the user linear equation
     return matrix, vectorB
+
+def initElementaryMatrix(size, row, col, value):
+    """
+    Initialize elementary matrix, from identity matrix, and a specific value, and return it
+    :param size: Matrix size
+    :param row: Row index
+    :param col: Column index
+    :param value: Value parameter
+    :return: Return the elementary matrix
+    """
+    # Initialize the desire elementary matrix
+    elementary_Matrix = [[1.0 if row == col else 0.0 for col in range(size)] for row in range(size)]
+    elementary_Matrix[row][col] = value
+
+    # Return the elementary matrix
+    return elementary_Matrix
+
+
+def determinantMatrix(matrix):
+    """
+    Calculate the matrix determinant and return the result
+    :param matrix: NxN Matrix
+    :return: Matrix determinant
+    """
+    # Simple case, The matrix size is 2x2
+    if len(matrix) == 2:
+        value = matrix[0][0] * matrix[1][1] - matrix[1][0] * matrix[0][1]
+        return value
+
+    # Initialize our sum variable
+    determinantSum = 0
+
+    # Loop to traverse each column of the matrix
+    for current_column in range(len(matrix)):
+        sign = (-1) ** current_column
+
+        # Calling the function recursively to get determinant value of sub matrix obtained
+        determinant_sub = determinantMatrix([row[: current_column] + row[current_column + 1:] for row in (matrix[: 0] + matrix[0 + 1:])])
+
+        # Adding the calculated determinant value of particular column matrix to total the determinantSum
+        determinantSum = determinantSum + (sign * matrix[0][current_column] * determinant_sub)
+
+    # Returning the final Sum
+    return determinantSum
+
+
+# Calling our matrix solver main
+gaussianElimination()
