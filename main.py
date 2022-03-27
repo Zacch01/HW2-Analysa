@@ -160,3 +160,20 @@ def matrixCond(matrix, inverseMatrix):
     :return: Matrix solution precision
     """
     return infinityNorm(matrix) * infinityNorm(inverseMatrix)
+
+
+def infinityNorm(matrix):
+    """
+    Return the Max Norm of the matrix
+    :param matrix: NxN matrix
+    :return: Infinity norm of the matrix
+    """
+    norm = 0
+    for i in range(len(matrix[0])):
+        sumRow = 0
+        for j in range(len(matrix)):
+            sumRow = sumRow + abs(matrix[i][j])
+        norm = max(sumRow, norm)
+
+    # Return the max norm
+    return
