@@ -53,7 +53,7 @@ def gaussianElimination():
     originMatrix, vectorB = initMatrix()
 
     # Check if the matrix is Quadratic matrix, and check if vectorB is in appropriate size
-    if len(originMatrix) == len(originMatrix[0]) and (len(vectorB) == 1 and len(vectorB[0]) == len(originMatrix)):
+    if len(originMatrix) == len(originMatrix[0]) and (len(vectorB[0]) == 1 and len(vectorB) == len(originMatrix)):
 
         # In case the matrix has one solution
         if determinantMatrix(originMatrix):
@@ -176,7 +176,7 @@ def infinityNorm(matrix):
         norm = max(sumRow, norm)
 
     # Return the max norm
-    return
+    return norm
 
 def multiplyMatrix(matrixA, matrixB, isTrue):
     """
@@ -212,8 +212,8 @@ def initMatrix():
     :return: NxN matrix, and Nx1 vector B
     """
     # Initialize Linear Equation from the user
-    matrix = [[5.5, 6.0, 1], [-10.0, 10.0, 15.0], [2.0, -8.0, 5.0]]
-    vectorB = [[2.0], [8.0], [4.0]]
+    matrix = [[2.0, 2.0, 3.0], [4.0, -5.0, 6.0], [7.0, 8.0, 8.0]]
+    vectorB = [[2.0], [5.0], [4.0]]
 
     # Return the user linear equation
     return matrix, vectorB
