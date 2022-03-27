@@ -1,56 +1,79 @@
-# Matrix Solver in Gaussian Elimination and LU Decomposition.
+# Matrix Solver in Gaussian Elimination Method
 
+# Global Variable [Only Used To print the iteration number]
 MATRIX_COUNT = 0
 
 
-def multiplyMatrix(matrixA, matrixB, isTrue):
+def printIntoFile(data, message, isTrue):
     """
-    Multiplying two matrices and return the outcome matrix
-
-    :param matrixA: NxM Matrix
-    :param matrixB: NxM Matrix
-    :param isTrue: boolean which decide if save matrices in a list
-    :return: NxM matrix
+    Printing the data and the message content into a specified file
+    :param data: Data from a user
+    :param message: Message that contain the data subject
+    :param isTrue: Boolean parameter, which help to navigate to the right section
     """
-    # Initialize NxM matrix filled with zeros
-    matrixC = [[0.0] * len(matrixB[0]) for _ in range(len(matrixA))]
+    # Our Global Variable To Count The Iteration Number
+    global MATRIX_COUNT
 
-    # Multiply the two matrices and store the outcome in matrixC
-    for i in range(len(matrixA)):
-        for j in range(len(matrixB[0])):
-            for k in range(len(matrixB)):
-                matrixC[i][j] = matrixC[i][j] + matrixA[i][k] * matrixB[k][j]
+    # In Case We Are Running A New Linear Equation, It will erase the lase one
+    if MATRIX_COUNT == 0:
+        file = open('GaussianElimination.txt', 'w')
+        file.close()
 
-    # Saving the matrices in the right lists
-    if isTrue:
-        global MATRIX_COUNT
-        with open("GaussianElimination.txt", 'a+') as f:
-            f.write('=================================================================================================')
+    # Open the file and save the data
+    with open('GaussianElimination.txt', 'a+') as file:
+        # In case we are in an iteration solution
+        if isTrue:
+            # In case we are printing new calculation
+            if MATRIX_COUNT % 3 == 0:
+                file.write('==========================================================================================')
 
-            f.write('\nElementary Matrix [' + str(MATRIX_COUNT) + ']\n')
-            for i in range(len(matrixA)):
-                for j in range(len(matrixA)):
-                    temp = '{: ^22}'.format(matrixA[i][j])
-                    f.write(temp)
-                f.write('\n')
+            # Saving the matrix in the file
+            file.write('\n' + str(message) + ' [' + str(MATRIX_COUNT) + ']\n')
+            for i in range(len(data)):
+                for j in range(len(data[0])):
+                    objectData = '{: ^22}'.format(data[i][j])
+                    file.write(objectData)
+                file.write('\n')
 
-            f.write('\npreMultiply Matrix [' + str(MATRIX_COUNT) + ']\n')
-            for i in range(len(matrixB)):
-                for j in range(len(matrixB)):
-                    temp = '{: ^22}'.format(matrixB[i][j])
-                    f.write(temp)
-                f.write('\n')
+            # Increase Our Global Iteration Counter Variable
+            MATRIX_COUNT = MATRIX_COUNT + 1
 
-            f.write('\nafterMultiply Matrix [' + str(MATRIX_COUNT) + ']\n')
-            for i in range(len(matrixC)):
-                for j in range(len(matrixC)):
-                    temp = '{: ^22}'.format(matrixC[i][j])
-                    f.write(temp)
-                f.write('\n')
-
-        MATRIX_COUNT = MATRIX_COUNT + 1
-
-    # Return the outcome matrix
-    return matrixC
+        # Our Solution Data
+        else:
+            # In case we are printing the solution accuracy
+            file.write('==============================================================================================')
+            file.write('\n[' + str(message) + ']\n')
+            file.write(str(data))
+            file.write('\n')
 
 
+def gaussianElimination():
+    """
+    Solving linear equation in Gaussian Elimination method
+    """
+    # Initialize the matrix, and vectorB
+    originMatrix, vectorB = initMatrix()
+
+    # Check if the matrix is Quadratic matrix, and check if vectorB is in appropriate size
+    if len(originMatrix) == len(originMatrix[0]) and (len(vectorB) == 1 and len(vectorB[0]) == len(originMatrix)):
+
+        # In case the matrix has one solution
+        if determinantMatrix(originMatrix):
+
+            # Getting the inverse matrix of originMatrix, and the fixed vectorB
+            inverseMatrix, vectorB = findInverse(originMatrix, vectorB)
+
+            # Getting the accuracy of the solution
+            solutionPrecision = matrixCond(originMatrix, inverseMatrix)
+
+            # Saving the matrix solution
+            printIntoFile(vectorB, 'Matrix Solution', True)
+            printIntoFile(solutionPrecision, 'Solution Accuracy Rate', False)
+
+        # According message In case there is more or less than one solution
+        else:
+            print('This Is A Singular Matrix')
+
+    # In case the input Linear Equation isn't meet the demands
+    else:
+        print("The Input Linear Equation Isn't Match")
