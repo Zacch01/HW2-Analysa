@@ -31,3 +31,42 @@ def findInverse(matrix, vector):
 
     # Return the inverse matrix, and the updated solution vector of the matrix
     return inverseMatrix, vector
+
+def checkPivotColumn(matrix, vector, index):
+    """
+    Taking care that the pivot in the column [index] will be the highest one, and return the updated matrix and vector
+    :param matrix: NxN matrix
+    :param vector: Nx1 vector solution of the matrix
+    :param index: Column index
+    :return: The updated matrix and vector
+    """
+    # Variable to store the max pivot in specific column
+    maxPivot = abs(matrix[index][index])
+
+    # Variable to store the new pivot row
+    pivotRow = 0
+
+    for j in range(index + 1, len(matrix)):
+        # In case there's a higher pivot
+        if abs(matrix[j][index]) > maxPivot:
+            # Store the new highest pivot, and his row
+            maxPivot = abs(matrix[j][index])
+            pivotRow = j
+
+    # In case there was a higher pivot, change between the matrix rows
+    if maxPivot != abs(matrix[index][index]):
+        # Initialize elementary matrix to swap the matrix rows
+        elementaryMatrix = [[1.0 if x == y else 0.0 for y in range(len(matrix))] for x in range(len(matrix))]
+        elementaryMatrix[index], elementaryMatrix[pivotRow] = elementaryMatrix[pivotRow], elementaryMatrix[index]
+
+        # Changed the Matrix and the vector Rows
+        matrix = multiplyMatrix(elementaryMatrix, matrix, True)
+        vector = multiplyMatrix(elementaryMatrix, vector, False)
+
+    # In case the pivot isn't one, we will make sure it will be one
+    if matrix[index][index] != 1:
+        vector = multiplyMatrix(initElementaryMatrix(len(matrix), index, index, 1 / matrix[index][index]), vector, False)
+        matrix = multiplyMatrix(initElementaryMatrix(len(matrix), index, index, 1 / matrix[index][index]), matrix, True)
+
+    # Return the updated matrix and vector
+    return matrix, vector
