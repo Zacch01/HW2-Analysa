@@ -177,3 +177,43 @@ def infinityNorm(matrix):
 
     # Return the max norm
     return
+
+def multiplyMatrix(matrixA, matrixB, isTrue):
+    """
+    Multiplying two matrices and return the outcome matrix
+    :param matrixA: NxM Matrix
+    :param matrixB: NxM Matrix
+    :param isTrue: Boolean which decide if to save the matrices in a file
+    :return: NxM matrix
+    """
+    # Initialize NxM matrix filled with zero's
+    matrixC = [[0.0] * len(matrixB[0]) for _ in range(len(matrixA))]
+
+    # Multiply the two matrices and store the outcome in matrixC
+    for i in range(len(matrixA)):
+        for j in range(len(matrixB[0])):
+            for k in range(len(matrixB)):
+                matrixC[i][j] = matrixC[i][j] + matrixA[i][k] * matrixB[k][j]
+
+    # Saving the matrices in the right lists
+    if isTrue:
+        # Saving the matrices in a file
+        printIntoFile(matrixA, 'Elementary Matrix', True)
+        printIntoFile(matrixB, 'Pre Multiply Matrix', True)
+        printIntoFile(matrixC, 'After Multiply Matrix', True)
+
+    # Return the outcome matrix
+    return matrixC
+
+
+def initMatrix():
+    """
+    Initialize user linear equations, and return them
+    :return: NxN matrix, and Nx1 vector B
+    """
+    # Initialize Linear Equation from the user
+    matrix = [[5.5, 6.0, 1], [-10.0, 10.0, 15.0], [2.0, -8.0, 5.0]]
+    vectorB = [[2.0], [8.0], [4.0]]
+
+    # Return the user linear equation
+    return matrix, vectorB
