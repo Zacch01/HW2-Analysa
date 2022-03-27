@@ -32,6 +32,7 @@ def findInverse(matrix, vector):
     # Return the inverse matrix, and the updated solution vector of the matrix
     return inverseMatrix, vector
 
+
 def checkPivotColumn(matrix, vector, index):
     """
     Taking care that the pivot in the column [index] will be the highest one, and return the updated matrix and vector
@@ -70,3 +71,13 @@ def checkPivotColumn(matrix, vector, index):
 
     # Return the updated matrix and vector
     return matrix, vector
+
+
+def matrixCond(matrix, inverseMatrix):
+    """
+    Multiply the max norm of the origin and inverse matrix, and return its solution accuracy
+    :param matrix: NxN matrix
+    :param inverseMatrix: NxN inverse matrix of matrix
+    :return: Matrix solution precision
+    """
+    return infinityNorm(matrix) * infinityNorm(inverseMatrix)
