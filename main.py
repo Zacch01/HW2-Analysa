@@ -120,7 +120,6 @@ def findInverse(matrix, vector):
                 matrix = multiplyMatrix(initElementaryMatrix(len(matrix), j, i, - matrix[j][i]), matrix, True)
 
     # Return the inverse matrix, and the updated solution vector of the matrix
-    print(inverseMatrix)
     return inverseMatrix, vector
 
 
