@@ -1,19 +1,25 @@
 # Author : Nitzan Tomer & Zaccharie Attias & Sharon Angdo
+# Matrix Solver in Gaussian Elimination Method
+
 # Global Variable [Only Used To print the iteration number]
 MATRIX_COUNT = 0
-COUNT = 0
+
+
+# Random function
+def randomQuestion(tz1, tz2, tz3):
+    return tz1 % 12+19, tz2 % 12+19, tz3 % 12+19
 
 
 def printIntoFile(data, message, isTrue):
     """
     Printing the data and the message content into a specified file
+
     :param data: Data from a user
     :param message: Message that contain the data subject
     :param isTrue: Boolean parameter, which help to navigate to the right section
     """
     # Our Global Variable To Count The Iteration Number
     global MATRIX_COUNT
-    global COUNT
 
     # In Case We Are Running A New Linear Equation, It will erase the lase one
     if MATRIX_COUNT == 0:
@@ -27,10 +33,9 @@ def printIntoFile(data, message, isTrue):
             # In case we are printing new calculation
             if MATRIX_COUNT % 3 == 0:
                 file.write('==========================================================================================')
-                COUNT += 1
 
             # Saving the matrix in the file
-            file.write('\n' + str(message) + ' [' + str(COUNT) + ']\n')
+            file.write('\n' + str(message) + ' [' + str(MATRIX_COUNT//3 + 1) + ']\n')
             for i in range(len(data)):
                 for j in range(len(data[0])):
                     objectData = '{: ^22}'.format(data[i][j])
@@ -52,12 +57,13 @@ def printIntoFile(data, message, isTrue):
 def gaussianElimination():
     """
     Solving linear equation in Gaussian Elimination method
+
     """
     # Initialize the matrix, and vectorB
     originMatrix, vectorB = initMatrix()
 
     # Check if the matrix is Quadratic matrix, and check if vectorB is in appropriate size
-    if len(originMatrix) == len(originMatrix[0]) and (len(vectorB[0]) == 1 and len(vectorB) == len(originMatrix)):
+    if len(originMatrix) == len(originMatrix[0]) and len(vectorB) == len(originMatrix) and len(vectorB[0]) == 1:
 
         # In case the matrix has one solution
         if determinantMatrix(originMatrix):
@@ -80,10 +86,11 @@ def gaussianElimination():
     else:
         print("The Input Linear Equation Isn't Match")
 
-        
+
 def findInverse(matrix, vector):
     """
     Solve the matrix into an Identity matrix, updating the vector of the matrix, and return the inverse matrix of matrix
+
     :param matrix: NxN matrix
     :param vector: Nx1 vector solution of the matrix
     :return: Inverse NxN matrix, the inverse matrix of matrix
@@ -94,7 +101,7 @@ def findInverse(matrix, vector):
     # Solving matrix into an Upper matrix
     for i in range(len(matrix)):
         # Calling function to reArrange the matrix, and the vector
-        matrix, vector = checkPivotColumn(matrix, vector, i)
+        matrix, vector, inverseMatrix = checkPivotColumn(matrix, vector, inverseMatrix, i)
 
         for j in range(i + 1, len(matrix)):
             if matrix[j][i] != 0:
@@ -113,12 +120,14 @@ def findInverse(matrix, vector):
                 matrix = multiplyMatrix(initElementaryMatrix(len(matrix), j, i, - matrix[j][i]), matrix, True)
 
     # Return the inverse matrix, and the updated solution vector of the matrix
+    print(inverseMatrix)
     return inverseMatrix, vector
 
 
-def checkPivotColumn(matrix, vector, index):
+def checkPivotColumn(matrix, vector, inverseMatrix, index):
     """
     Taking care that the pivot in the column [index] will be the highest one, and return the updated matrix and vector
+
     :param matrix: NxN matrix
     :param vector: Nx1 vector solution of the matrix
     :param index: Column index
@@ -145,19 +154,23 @@ def checkPivotColumn(matrix, vector, index):
 
         # Changed the Matrix and the vector Rows
         matrix = multiplyMatrix(elementaryMatrix, matrix, True)
+        inverseMatrix = multiplyMatrix(elementaryMatrix, inverseMatrix, False)
         vector = multiplyMatrix(elementaryMatrix, vector, False)
 
     # In case the pivot isn't one, we will make sure it will be one
-    if matrix[index][index] != 1:
+    while matrix[index][index] != 1:
         vector = multiplyMatrix(initElementaryMatrix(len(matrix), index, index, 1 / matrix[index][index]), vector, False)
+        inverseMatrix = multiplyMatrix(initElementaryMatrix(len(matrix), index, index, 1 / matrix[index][index]), inverseMatrix, False)
         matrix = multiplyMatrix(initElementaryMatrix(len(matrix), index, index, 1 / matrix[index][index]), matrix, True)
+
     # Return the updated matrix and vector
-    return matrix, vector
+    return matrix, vector, inverseMatrix
 
 
 def matrixCond(matrix, inverseMatrix):
     """
     Multiply the max norm of the origin and inverse matrix, and return its solution accuracy
+
     :param matrix: NxN matrix
     :param inverseMatrix: NxN inverse matrix of matrix
     :return: Matrix solution precision
@@ -168,6 +181,7 @@ def matrixCond(matrix, inverseMatrix):
 def infinityNorm(matrix):
     """
     Return the Max Norm of the matrix
+
     :param matrix: NxN matrix
     :return: Infinity norm of the matrix
     """
@@ -181,9 +195,11 @@ def infinityNorm(matrix):
     # Return the max norm
     return norm
 
+
 def multiplyMatrix(matrixA, matrixB, isTrue):
     """
     Multiplying two matrices and return the outcome matrix
+
     :param matrixA: NxM Matrix
     :param matrixB: NxM Matrix
     :param isTrue: Boolean which decide if to save the matrices in a file
@@ -197,11 +213,6 @@ def multiplyMatrix(matrixA, matrixB, isTrue):
         for j in range(len(matrixB[0])):
             for k in range(len(matrixB)):
                 matrixC[i][j] = matrixC[i][j] + matrixA[i][k] * matrixB[k][j]
-
-    for i in range(len(matrixC)):
-        for j in range(len(matrixC[0])):
-            if abs(matrixC[i][j] - round(matrixC[i][j])) <= max(1e-9 * max(abs(matrixC[i][j]), abs(round(matrixC[i][j]))), 0.0):
-                matrixC[i][j] = round(matrixC[i][j])
 
     # Saving the matrices in the right lists
     if isTrue:
@@ -217,18 +228,21 @@ def multiplyMatrix(matrixA, matrixB, isTrue):
 def initMatrix():
     """
     Initialize user linear equations, and return them
+
     :return: NxN matrix, and Nx1 vector B
     """
     # Initialize Linear Equation from the user
-    matrix = [[2.0, 2.0, 3.0], [4.0, -5.0, 6.0], [7.0, 8.0, 8.0]]
-    vectorB = [[2.0], [5.0], [4.0]]
+    matrix = [[4, -1, 1], [1, 6, 2], [-1, -2, 5]]
+    vectorB = [[4], [9], [2]]
 
     # Return the user linear equation
     return matrix, vectorB
 
+
 def initElementaryMatrix(size, row, col, value):
     """
     Initialize elementary matrix, from identity matrix, and a specific value, and return it
+
     :param size: Matrix size
     :param row: Row index
     :param col: Column index
@@ -246,6 +260,7 @@ def initElementaryMatrix(size, row, col, value):
 def determinantMatrix(matrix):
     """
     Calculate the matrix determinant and return the result
+
     :param matrix: NxN Matrix
     :return: Matrix determinant
     """
@@ -272,4 +287,10 @@ def determinantMatrix(matrix):
 
 
 # Calling our matrix solver main
+tz1 = 341101251
+tz2 = 206847428
+tz3 = 205872781
+Zaccharie, Nitzan, Sharon = randomQuestion(tz1, tz2, tz3)
+
+print("\nQuestion "+str(Zaccharie)+" for Zaccharie, Question "+str(Nitzan)+" for Nitzan, Question "+str(Sharon)+" for Sharon")
 gaussianElimination()
